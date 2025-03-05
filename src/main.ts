@@ -4,8 +4,8 @@ import './style.css';
 
 new Phaser.Game({
   title: 'Wind4Tune test',
-  width: 1920,
-  height: 1080,
+  width: 1024,
+  height: 768,
   url: '',
   version: '0.1',
   backgroundColor:' #000',
