@@ -3,7 +3,7 @@ import { Entity } from './entity';
 export class Character extends Entity {
   textureKey: string;
   constructor(scene: Phaser.Scene, x: number, y: number, texture: string) {
-    super(scene, x, y, 'player');
+    super(scene, x, y, texture);
 
     const anims = this.scene.anims;
     const frameRate = 8;
@@ -54,6 +54,7 @@ export class Character extends Entity {
 
   update() {
     const controls = this.scene.input.keyboard?.createCursorKeys();
+    
     if (controls?.up.isDown) {
       this.play('up', true);
       this.setPosition(this.x, this.y - 1);

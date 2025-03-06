@@ -1,11 +1,14 @@
 import chessboard_tiles from '../assets/chessboard.json'
 import { Character } from '../entities/character';
+import { Chesspiece } from '../entities/chesspiece';
 import { SIZES } from '../variables';
 
 export class Chessboard extends Phaser.Scene {
   private player?: Character;
+  private chesspiece?: Chesspiece;
   private keyX?: Phaser.Input.Keyboard.Key;
   private victoryText?: Phaser.GameObjects.Text;
+  private interactionText?: Phaser.GameObjects.Text;
   constructor() {
     super ('ChessboardScene');
   }
@@ -13,8 +16,12 @@ export class Chessboard extends Phaser.Scene {
   preload() {
     this.load.image('chessboard', './src/assets/chessboard.png');
     this.load.tilemapTiledJSON('map', './src/assets/chessboard.json');
+
     this.load.spritesheet('player', './src/assets/pawn.png', { 
       frameWidth: SIZES.PLAYER.WIDTH, frameHeight: SIZES.PLAYER.HEIGHT 
+    });
+    this.load.spritesheet('knight', './src/assets/red_knight.png', { 
+      frameWidth: SIZES.CHESSPIECE.WIDTH, frameHeight: SIZES.CHESSPIECE.HEIGHT 
     });
   }
 
@@ -36,10 +43,12 @@ export class Chessboard extends Phaser.Scene {
     overlay?.setCollisionByProperty({ collides: true });
     overlay?.setDepth(10);
 
-    this.matter.world.convertTilemapLayer(unpassable);
-    this.matter.world.convertTilemapLayer(overlay);
+    this.matter.world.convertTilemapLayer(unpassable!);
+    this.matter.world.convertTilemapLayer(overlay!);
     
     this.player = new Character(this, 912, 650, 'player');
+    this.chesspiece = new Chesspiece(this, 880, 750, 'knight');
+    this.chesspiece.setUtils(this.player);
 
     this.matter.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
@@ -48,10 +57,18 @@ export class Chessboard extends Phaser.Scene {
     this.keyX = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.X);
 
     this.victoryText = this.add.text(0, 0, 'Победа', 
-      {fontSize: '64px', color: '#fff', align: 'center', backgroundColor: '#000'});
-    this.victoryText.setOrigin(0.5, 0.5);
-    this.victoryText.setDepth(15);
-    this.victoryText.visible = false;
+      {fontSize: '64px', color: '#fff', align: 'center', backgroundColor: '#000'}
+    );
+    this.interactionText = this.add.text(0, 0, 'Рассмотреть',
+      {fontSize: '16px', color: '#fff', align: 'center', backgroundColor: '#000'}
+    );
+
+    const textArr = [this.victoryText, this.interactionText];
+    textArr.forEach((text) => {
+      text.setDepth(15);
+      text.setOrigin(0.5, 0.5);
+      text.visible = false;
+    });
   }
 
   setVictory = (): void => {
@@ -60,8 +77,18 @@ export class Chessboard extends Phaser.Scene {
     this.game.pause();
   }
 
+  interact = (): void => {
+    this.interactionText?.setPosition(this.player?.body?.position.x, this.player?.body?.position.y! - 50);
+    this.interactionText!.visible = true;
+  }
+
+  stop = (): void => {
+    this.interactionText!.visible = false;
+  }
+
   update() {
     this.player?.update();
+    this.chesspiece?.update();
     if (Phaser.Input.Keyboard.JustDown(this.keyX!)) {
       this.setVictory();
     };
