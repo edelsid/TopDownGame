@@ -4,6 +4,8 @@ import { SIZES } from '../variables';
 
 export class Chessboard extends Phaser.Scene {
   private player?: Character;
+  private keyX?: Phaser.Input.Keyboard.Key;
+  private victoryText?: Phaser.GameObjects.Text;
   constructor() {
     super ('ChessboardScene');
   }
@@ -24,6 +26,7 @@ export class Chessboard extends Phaser.Scene {
       SIZES.TILE, 
       SIZES.TILE
     ) ?? 'chessboard';
+
     map.createLayer('ground', tileset, 0, 0);
     map.createLayer('ground2', tileset, 0, 0);
     const unpassable = map.createLayer('walls', tileset, 0, 0);
@@ -35,15 +38,32 @@ export class Chessboard extends Phaser.Scene {
 
     this.matter.world.convertTilemapLayer(unpassable);
     this.matter.world.convertTilemapLayer(overlay);
-
+    
     this.player = new Character(this, 912, 650, 'player');
 
     this.matter.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.cameras.main.startFollow(this.player);
+
+    this.keyX = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.X);
+
+    this.victoryText = this.add.text(0, 0, 'Победа', 
+      {fontSize: '64px', color: '#fff', align: 'center', backgroundColor: '#000'});
+    this.victoryText.setOrigin(0.5, 0.5);
+    this.victoryText.setDepth(15);
+    this.victoryText.visible = false;
+  }
+
+  setVictory = (): void => {
+    this.victoryText?.setPosition(this.player?.body?.position.x, this.player?.body?.position.y);
+    this.victoryText!.visible = true;
+    this.game.pause();
   }
 
   update() {
     this.player?.update();
+    if (Phaser.Input.Keyboard.JustDown(this.keyX!)) {
+      this.setVictory();
+    };
   }
 }
