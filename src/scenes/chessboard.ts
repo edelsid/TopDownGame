@@ -24,12 +24,19 @@ export class Chessboard extends Phaser.Scene {
       SIZES.TILE, 
       SIZES.TILE
     ) ?? 'chessboard';
-    const ground = map.createLayer('ground', tileset, 0, 0);
-    const grass = map.createLayer('ground2', tileset, 0, 0);
+    map.createLayer('ground', tileset, 0, 0);
+    map.createLayer('ground2', tileset, 0, 0);
     const unpassable = map.createLayer('walls', tileset, 0, 0);
-    const objects = map.createLayer('objects', tileset, 0, 0);
+    const overlay = map.createLayer('overlay', tileset, 0, 0);
 
-    this.player = new Character(this, 912, 640, 'player');
+    unpassable?.setCollisionByProperty({ collides: true });
+    overlay?.setCollisionByProperty({ collides: true });
+    overlay?.setDepth(10);
+
+    this.matter.world.convertTilemapLayer(unpassable);
+    this.matter.world.convertTilemapLayer(overlay);
+
+    this.player = new Character(this, 912, 650, 'player');
 
     this.matter.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
