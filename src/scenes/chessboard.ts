@@ -1,7 +1,7 @@
 import chessboard_tiles from '../../public/assets/chessboard.json'
 import { Character } from '../entities/character';
 import { Chesspiece } from '../entities/chesspiece';
-import { SIZES } from '../variables';
+import { SIZES, MAP_LAYERS, ENTITIES } from '../variables';
 
 export class Chessboard extends Phaser.Scene {
   private player?: Character;
@@ -13,19 +13,21 @@ export class Chessboard extends Phaser.Scene {
     super ('ChessboardScene');
   }
 
+  // Загрузка ассетов карты, персонажа и интерактивного объекта
   preload() {
     this.load.image('chessboard', '/assets/chessboard.png');
     this.load.tilemapTiledJSON('map', '/assets/chessboard.json');
 
-    this.load.spritesheet('player', '/assets/pawn.png', { 
+    this.load.spritesheet(ENTITIES.PLAYER, '/assets/pawn.png', { 
       frameWidth: SIZES.PLAYER.WIDTH, frameHeight: SIZES.PLAYER.HEIGHT 
     });
-    this.load.spritesheet('knight', '/assets/red_knight.png', { 
+    this.load.spritesheet(ENTITIES.KNIGHT, '/assets/red_knight.png', { 
       frameWidth: SIZES.CHESSPIECE.WIDTH, frameHeight: SIZES.CHESSPIECE.HEIGHT 
     });
   }
 
   create() {
+    // Создание карты
     const map = this.make.tilemap({ key: 'map' });
     const tileset = map.addTilesetImage(
       chessboard_tiles.tilesets[0].name, 
@@ -34,11 +36,12 @@ export class Chessboard extends Phaser.Scene {
       SIZES.TILE
     ) ?? 'chessboard';
 
-    map.createLayer('ground', tileset, 0, 0);
-    map.createLayer('ground2', tileset, 0, 0);
-    const unpassable = map.createLayer('walls', tileset, 0, 0);
-    const overlay = map.createLayer('overlay', tileset, 0, 0);
+    map.createLayer(MAP_LAYERS.GROUND, tileset, 0, 0);
+    map.createLayer(MAP_LAYERS.GRASS, tileset, 0, 0);
+    const unpassable = map.createLayer(MAP_LAYERS.WALLS, tileset, 0, 0);
+    const overlay = map.createLayer(MAP_LAYERS.OVERLAY, tileset, 0, 0);
 
+    // Установка непроходимых слоев и наложение некоторых тайлов поверх игрока (верхушки деревьев, шахматных фигур)
     unpassable?.setCollisionByProperty({ collides: true });
     overlay?.setCollisionByProperty({ collides: true });
     overlay?.setDepth(10);
@@ -46,14 +49,17 @@ export class Chessboard extends Phaser.Scene {
     this.matter.world.convertTilemapLayer(unpassable!);
     this.matter.world.convertTilemapLayer(overlay!);
     
-    this.player = new Character(this, 912, 650, 'player');
-    this.knight = new Chesspiece(this, 880, 750, 'knight');
+    // Создание персонажа и интерактивной фигурки
+    this.player = new Character(this, 912, 650, ENTITIES.PLAYER);
+    this.knight = new Chesspiece(this, 880, 750, ENTITIES.KNIGHT);
     this.knight.setUtils(this.player);
 
+    // Настройка границ карты и следование камеры
     this.matter.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.cameras.main.startFollow(this.player);
 
+    // Создание клавиши для победного сообщения и интерактивных текстов
     this.keyX = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.X);
 
     this.victoryText = this.add.text(0, 0, 'Победа', 
@@ -71,17 +77,20 @@ export class Chessboard extends Phaser.Scene {
     });
   }
 
+  // Ф-ция показа победного сообщения
   setVictory = (): void => {
     this.victoryText?.setPosition(this.player?.body?.position.x, this.player?.body?.position.y);
     this.victoryText!.visible = true;
     this.game.pause();
   }
 
+  // Ф-ция показа сообщения взаимодействия с объектом
   interact = (): void => {
     this.interactionText?.setPosition(this.player?.body?.position.x, this.player?.body?.position.y! - 50);
     this.interactionText!.visible = true;
   }
 
+  // Ф-ция остановки взаимодействия с объектом
   stop = (): void => {
     this.interactionText!.visible = false;
   }

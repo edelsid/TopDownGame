@@ -9,3 +9,15 @@ export const SIZES = {
     HEIGHT: 64,
   }
 }
+
+export const MAP_LAYERS = {
+  GROUND: 'ground',
+  GRASS: 'ground2',
+  WALLS: 'walls',
+  OVERLAY: 'overlay',
+}
+
+export const ENTITIES = {
+  PLAYER: 'player',
+  KNIGHT: 'knight',
+}

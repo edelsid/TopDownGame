@@ -17,6 +17,7 @@ export class Chesspiece extends Entity {
 
   update() {
     const player = this.player;
+    // Задание дистанции и взаимодествия с игроком в зависимости от дистанции
     const distance = Phaser.Math.Distance.Between(this.x, this.y, player!.x, player!.y);
     if (distance < this.interactionDistance) {
       this.scene.interact();

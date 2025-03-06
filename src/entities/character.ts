@@ -11,6 +11,7 @@ export class Character extends Entity {
     this.setRectangle(32, 28);
     this.setOrigin(0.5, 0.70);
 
+    // Анимации движения
     anims.create({
       key: 'down',
       frameRate,
@@ -53,6 +54,7 @@ export class Character extends Entity {
   }
 
   update() {
+    // Задание основных клавиш движения и реакций на их нажатие
     const controls = this.scene.input.keyboard?.createCursorKeys();
     
     if (controls?.up.isDown) {
