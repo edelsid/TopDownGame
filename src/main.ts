@@ -17,9 +17,9 @@ new Phaser.Game({
     default: 'matter',
     matter: {
       gravity: { x: 0, y: 0 },
-      debug: true,
     }
   },
   pixelArt: true,
+  antialias: false,
   scene: scenes,
 });

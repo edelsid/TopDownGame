@@ -8,8 +8,8 @@ export class Character extends Entity {
     const anims = this.scene.anims;
     const frameRate = 8;
     this.textureKey = texture;
-    this.setRectangle(32, 32);
-    this.setOrigin(0.5, 0.65);
+    this.setRectangle(32, 28);
+    this.setOrigin(0.5, 0.70);
 
     anims.create({
       key: 'down',

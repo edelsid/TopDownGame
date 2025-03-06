@@ -1,11 +1,11 @@
-import chessboard_tiles from '../assets/chessboard.json'
+import chessboard_tiles from '../../public/assets/chessboard.json'
 import { Character } from '../entities/character';
 import { Chesspiece } from '../entities/chesspiece';
 import { SIZES } from '../variables';
 
 export class Chessboard extends Phaser.Scene {
   private player?: Character;
-  private chesspiece?: Chesspiece;
+  private knight?: Chesspiece;
   private keyX?: Phaser.Input.Keyboard.Key;
   private victoryText?: Phaser.GameObjects.Text;
   private interactionText?: Phaser.GameObjects.Text;
@@ -14,13 +14,13 @@ export class Chessboard extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('chessboard', './src/assets/chessboard.png');
-    this.load.tilemapTiledJSON('map', './src/assets/chessboard.json');
+    this.load.image('chessboard', '/assets/chessboard.png');
+    this.load.tilemapTiledJSON('map', '/assets/chessboard.json');
 
-    this.load.spritesheet('player', './src/assets/pawn.png', { 
+    this.load.spritesheet('player', '/assets/pawn.png', { 
       frameWidth: SIZES.PLAYER.WIDTH, frameHeight: SIZES.PLAYER.HEIGHT 
     });
-    this.load.spritesheet('knight', './src/assets/red_knight.png', { 
+    this.load.spritesheet('knight', '/assets/red_knight.png', { 
       frameWidth: SIZES.CHESSPIECE.WIDTH, frameHeight: SIZES.CHESSPIECE.HEIGHT 
     });
   }
@@ -47,8 +47,8 @@ export class Chessboard extends Phaser.Scene {
     this.matter.world.convertTilemapLayer(overlay!);
     
     this.player = new Character(this, 912, 650, 'player');
-    this.chesspiece = new Chesspiece(this, 880, 750, 'knight');
-    this.chesspiece.setUtils(this.player);
+    this.knight = new Chesspiece(this, 880, 750, 'knight');
+    this.knight.setUtils(this.player);
 
     this.matter.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
@@ -88,7 +88,7 @@ export class Chessboard extends Phaser.Scene {
 
   update() {
     this.player?.update();
-    this.chesspiece?.update();
+    this.knight?.update();
     if (Phaser.Input.Keyboard.JustDown(this.keyX!)) {
       this.setVictory();
     };
