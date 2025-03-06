@@ -15,6 +15,7 @@ export class Chessboard extends Phaser.Scene {
 
   // Загрузка ассетов карты, персонажа и интерактивного объекта
   preload() {
+    this.load.setBaseURL('https://edelsid.github.io/TopDownGame/')
     this.load.image('chessboard', '/assets/chessboard.png');
     this.load.tilemapTiledJSON('map', '/assets/chessboard.json');
 
